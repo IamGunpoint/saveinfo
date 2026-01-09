@@ -1,30 +1,27 @@
 const { Client, GatewayIntentBits, SlashCommandBuilder, REST, Routes, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const express = require('express');
-const axios = require('axios');
+const https = require('https'); // Use built-in https, no install needed
 
 // --- CONFIG ---
 const TOKEN = 'YOUR_BOT_TOKEN_HERE';
 const CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
 const DATA_FILE = './database.json';
-const PING_URL = 'https://saveinfo.onrender.com'; // CHANGE THIS TO YOUR RENDER URL
+const PING_URL = 'https://saveinfo.onrender.com'; // CHANGE THIS
 
-// --- WEB SERVER & SELF-PING ---
+// --- WEB SERVER ---
 const app = express();
 app.get('/', (req, res) => res.send('Bot is Online!'));
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Web server listening for health checks.');
-});
+app.listen(process.env.PORT || 3000, () => console.log('Server started.'));
 
-// Self-ping every 14 minutes to prevent Render sleep
-setInterval(async () => {
-    try {
-        await axios.get(PING_URL);
-        console.log('Self-ping successful: Keeping bot awake.');
-    } catch (e) {
-        console.error('Self-ping failed (this is normal if URL is not set yet).');
-    }
-}, 1000); 
+// --- SELF-PING EVERY 5 SECONDS ---
+setInterval(() => {
+    https.get(PING_URL, (res) => {
+        console.log(`Self-ping status: ${res.statusCode}`);
+    }).on('error', (e) => {
+        console.error('Ping failed. Make sure PING_URL is correct.');
+    });
+}, 5000); // 5000ms = 5 seconds
 
 // --- DISCORD BOT ---
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -55,7 +52,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
 (async () => {
     try {
         await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
-        console.log('Commands Registered');
+        console.log('Slash commands loaded.');
     } catch (e) { console.error(e); }
 })();
 
@@ -76,14 +73,13 @@ client.on('interactionCreate', async interaction => {
 
         const embed = new EmbedBuilder()
             .setTitle(`Admin Records - Page ${page}`)
-            .setColor('#FF0000')
-            .setTimestamp();
+            .setColor('#FF0000');
 
         const items = data.slice(start, start + 10).map((it, i) => 
             `**ID:** \`${start + i + 1}\` | **User:** ${it.user} | **IP:** ${it.ip}`
         ).join('\n');
         
-        embed.setDescription(items || 'No entries on this page.');
+        embed.setDescription(items || 'No entries found.');
         await interaction.reply({ embeds: [embed] });
     }
 
