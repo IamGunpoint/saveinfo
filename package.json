@@ -1,7 +1,6 @@
 {
   "name": "discord-ip-bot",
   "version": "1.0.0",
-  "description": "Admin IP Management Bot",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
