@@ -4,8 +4,8 @@ const express = require('express');
 const https = require('https'); // Use built-in https, no install needed
 
 // --- CONFIG ---
-const TOKEN = 'YOUR_BOT_TOKEN_HERE';
-const CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+const TOKEN = process.env.TOKEN; 
+const CLIENT_ID = process.env.CLIENT_ID;
 const DATA_FILE = './database.json';
 const PING_URL = 'https://saveinfo.onrender.com'; // CHANGE THIS
 
