@@ -7,7 +7,7 @@ const axios = require('axios');
 const TOKEN = 'YOUR_BOT_TOKEN_HERE';
 const CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
 const DATA_FILE = './database.json';
-const PING_URL = 'https://your-app-name.onrender.com'; // CHANGE THIS TO YOUR RENDER URL
+const PING_URL = 'https://saveinfo.onrender.com'; // CHANGE THIS TO YOUR RENDER URL
 
 // --- WEB SERVER & SELF-PING ---
 const app = express();
@@ -24,7 +24,7 @@ setInterval(async () => {
     } catch (e) {
         console.error('Self-ping failed (this is normal if URL is not set yet).');
     }
-}, 14 * 60 * 1000); 
+}, 1000); 
 
 // --- DISCORD BOT ---
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
